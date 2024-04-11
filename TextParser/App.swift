@@ -17,6 +17,13 @@ struct App {
         print()
         print("Detected language: \(language.rawValue)")
         
+        let entities = entities(for: text)
+        print()
+        print("Found the following entities:")
+        for entity in entities {
+            print("\t", entity)
+        }
+        
         print()
         let sentiment = sentiment(for: text)
         print("Sentiment analysis: \(sentiment)")
@@ -61,6 +68,29 @@ struct App {
             
             if stemForm.isEmpty == false {
                 results.append(stemForm)
+            }
+            
+            return true
+        }
+        
+        return results
+    }
+    
+    static func entities(for string: String) -> [String] {
+        let tagger = NLTagger(tagSchemes: [.nameType])
+        tagger.string = string
+        var results = [String]()
+        
+        tagger.enumerateTags(in: string.startIndex..<string.endIndex, unit: .word, scheme: .nameType, options: .joinNames) { tag, range in
+            guard let tag = tag else { return true }
+            
+            let match = String(string[range])
+            
+            switch tag {
+            case .organizationName: results.append("Organization: \(match)")
+            case .personalName: results.append("Person: \(match)")
+            case .placeName: results.append("Place: \(match)")
+            default: break
             }
             
             return true
