@@ -12,6 +12,11 @@ import NaturalLanguage
 struct App {
     static func main() {
         let text = CommandLine.arguments.dropFirst().joined(separator: " ")
+        
+        let language = NLLanguageRecognizer.dominantLanguage(for: text) ?? .undetermined
+        print()
+        print("Detected language: \(language.rawValue)")
+        
         print()
         let sentiment = sentiment(for: text)
         print("Sentiment analysis: \(sentiment)")
